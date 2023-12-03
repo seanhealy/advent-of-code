@@ -1,7 +1,6 @@
-import { readFileSync } from "fs";
-import { join } from "path";
+import { stdin } from "../../utils/stdin";
 
-const input = readFileSync(join(__dirname, "input.txt"), "utf-8");
+const input = await stdin();
 const lines = input.split("\n");
 
 const sum = lines.reduce((sum, line) => {

@@ -4,12 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node",
+    "start": "tsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "author": "Sean Healy",
   "license": "ISC",
   "dependencies": {
-    "ts-node": "^10.9.1"
+    "tsx": "^4.6.2"
+  },
+  "engines": {
+    "node": "20.10.0",
+    "npm": "10.2.4"
+  },
+  "volta": {
+    "node": "20.10.0",
+    "npm": "10.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.2"
   }
 }
