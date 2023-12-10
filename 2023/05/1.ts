@@ -1,4 +1,7 @@
 import { read } from "../../utils/files";
+import { Worker } from "worker_threads";
+import { WorkerData } from "./mapSeed";
+import { join } from "path";
 
 type MapRow = [number, number, number];
 type Map = MapRow[];
@@ -24,27 +27,31 @@ while ((match = mapExtractor.exec(input)) !== null) {
   );
 }
 
-console.log(
-  Math.min(
-    ...seeds.map((seed) =>
-      maps.reduce((seed, map) => {
-        return doMapping(seed, map);
-      }, seed)
-    )
-  )
-);
+run();
 
-function doMapping(seed: number, map: Map): number {
-  const row = map.find(
-    ([destinationStart, rangeStart, length]) =>
-      seed >= rangeStart && seed <= rangeStart + length
+async function run() {
+  console.log("Total Seeds:", seeds.length);
+
+  const seedMins = await Promise.all(
+    seeds.map(async (seed, seedIndex) => {
+      return await runInWorker({ seed, maps });
+    })
   );
 
-  if (row) {
-    const [destinationStart, rangeStart, length] = row;
-    const offset = seed - rangeStart;
-    return destinationStart + offset;
-  }
+  console.log(Math.min(...seedMins));
+}
 
-  return seed;
+function runInWorker(workerData: WorkerData): Promise<number> {
+  return new Promise<number>((resolve, reject) => {
+    const worker = new Worker(join(__dirname, "./mapSeed.js"));
+
+    worker.on("message", resolve);
+    worker.on("error", reject);
+    worker.on("exit", (code) => {
+      if (code !== 0)
+        reject(new Error(`Worker stopped with exit code ${code}`));
+    });
+
+    worker.postMessage(workerData);
+  });
 }
