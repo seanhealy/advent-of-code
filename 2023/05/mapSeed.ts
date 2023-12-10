@@ -18,7 +18,7 @@ parentPort?.on("message", ({ seed, maps }: WorkerData) => {
 function doMapping(seed: number, map: Map): number {
   const row = map.find(
     ([destinationStart, rangeStart, length]) =>
-      seed >= rangeStart && seed <= rangeStart + length
+      seed >= rangeStart && seed <= rangeStart + length - 1
   );
 
   if (row) {
